@@ -13,6 +13,15 @@ struct json {
 
 struct json* parse_obj(std::string* src, uint32_t* i) {
     if((*src)[*i] == '{') {
+
+    }
+    if((*src)[*i] == '}') {
+        
+    }
+    if((*src)[*i] == ',') {
+        
+    }
+    if((*src)[*i] == ':') {
         
     }
 }
