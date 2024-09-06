@@ -6,6 +6,10 @@ struct sxcjson {
     struct sxcjson* next;
 };
 
+struct sxcjson* parse() {
+    
+}
+
 int main() {
-    printf("good morning world");
+    struct sxcjson* json = parse("foo:abc");
 }
