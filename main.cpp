@@ -1,19 +1,14 @@
 #include <bits/stdc++.h>
 
 struct json {
-    std::string key;
     enum {
-        json_kind_num,
+        json_kind_null,
         json_kind_str,
-        json_kind_vec,
-        json_kind_json,
-    } value_kind;
-    union {
-        int64_t* num;
-        std::string* str;
-        std::vector<struct json*> vec;
-        struct json* json;
-    }value;
+        json_kind_obj
+    };
+    std::string data;
+    struct json* obj;
+    struct json* next;
 };
 
 struct json* parse(std::string src) {
