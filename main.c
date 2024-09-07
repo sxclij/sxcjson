@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 
 struct sxcjson {
     char* key;
@@ -6,8 +7,7 @@ struct sxcjson {
     struct sxcjson* next;
 };
 
-struct sxcjson* parse() {
-    
+struct sxcjson* parse(const char* src,uint32_t* i) {
 }
 
 int main() {
