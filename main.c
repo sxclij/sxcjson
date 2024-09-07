@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 struct sxcjson {
     char* key;
@@ -12,9 +13,12 @@ struct sxcjson* parse_obj(const char* src, uint32_t* i) {
         (*i)++;
         parse_obj(src, i);
     } else {
-        while (*i != '{' && *i != '}' && *i != ':' &&*i != ',') {
+        uint32_t start = i;
+        while (*i != '{' && *i != '}' && *i != ':' && *i != ',') {
             (*i)++;
         }
+        char* str = (char*)malloc(sizeof(char) * (*i - start));
+        memcpy(str, src + start, *i - start);
     }
 }
 struct sxcjson* parse(const char* src) {
