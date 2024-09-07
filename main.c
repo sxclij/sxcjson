@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct sxcjson {
     char* key;
@@ -13,15 +13,9 @@ struct sxcjson* parse_obj(const char* src, uint32_t* i) {
     struct sxcjson* result = (struct sxcjson*)malloc(sizeof(struct sxcjson));
     uint32_t start = *i;
     if (src[*i] == '{') {
-        
-        return result;
-    }
-    if (src[*i] == '}') {
-        return result;
-    }
-    if (src[*i] == ',') {
         (*i)++;
-        result->next = parse_obj(src,i);
+        result = parse_obj(src, i);
+        (*i)++;
         return result;
     }
     while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',') {
@@ -39,15 +33,18 @@ struct sxcjson* parse_obj(const char* src, uint32_t* i) {
     }
     (*i)++;
     result->val = parse_obj(src, i);
+    if (src[*i] == ',') {
+        (*i)++;
+        result->next = parse_obj(src, i);
+    }
     return result;
 }
 struct sxcjson* parse(const char* src) {
     uint32_t i = 0;
     return parse_obj(src, &i);
 }
-
 int main() {
-    const char* src = "foo:abc";
+    const char* src = "{foo:{a:1,b:2,c:3},bar:def}";
     struct sxcjson* json = parse(src);
     return 0;
 }
