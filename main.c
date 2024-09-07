@@ -75,10 +75,10 @@ void sxcjson_free(struct sxcjson* json) {
     free(json);
 }
 int main() {
-    const char* src = "{foo:{a:1,b:2,c:3},bar:def}";
+    const char* src = "{foo:{a:1,b:2,c:3},bar:{f:6,e:5,d:4}}";
     struct sxcjson* json = sxcjson_parse(src);
-    struct sxcjson* foo_b = sxcjson_provide(json, "foo.b");
-    puts(foo_b->str);  // 2
+    struct sxcjson* foo_e = sxcjson_provide(json, "bar.e");
+    puts(foo_e->str);  // 5
     sxcjson_free(json);
     return 0;
 }
