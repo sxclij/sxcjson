@@ -1,1 +1,1 @@
-very small json parser.
+very small Oreore json parser.
