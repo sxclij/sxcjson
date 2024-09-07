@@ -7,7 +7,12 @@ struct sxcjson {
     struct sxcjson* next;
 };
 
-struct sxcjson* parse(const char* src,uint32_t* i) {
+struct sxcjson* parse_obj(const char* src, uint32_t* i) {
+
+}
+struct sxcjson* parse(const char* src) {
+    uint32_t i = 0;
+    parse_obj(src, i);
 }
 
 int main() {
