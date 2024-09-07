@@ -7,7 +7,7 @@
 
 struct sxcjson {
     char* str;
-    struct sxcjson* val;
+    struct sxcjson* child;
     struct sxcjson* next;
 };
 struct {
@@ -34,14 +34,14 @@ struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
     global.sxcjson_char_size += str_size + 1;
     result->str = str;
     result->next = NULL;
-    result->val = NULL;
+    result->child = NULL;
     memcpy(str, src + start, str_size);
     str[str_size] = '\0';
     if (src[*i] != ':') {
         return result;
     }
     (*i)++;
-    result->val = sxcjson_parse_obj(src, i);
+    result->child = sxcjson_parse_obj(src, i);
     if (src[*i] == ',') {
         (*i)++;
         result->next = sxcjson_parse_obj(src, i);
@@ -66,7 +66,7 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
                 return NULL;
             }
         }
-        result = result->val;
+        result = result->child;
         if (str[i] == '.') {
             i++;
         }
