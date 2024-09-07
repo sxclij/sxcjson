@@ -14,11 +14,11 @@ struct {
     char sxcjson_char[sxcjson_capacity];
     struct sxcjson sxcjson_data[sxcjson_capacity];
     uint32_t sxcjson_char_size;
-    uint32_t sxcjson_passive_size;
+    uint32_t sxcjson_data_size;
 } global;
 
 struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
-    struct sxcjson* result = &global.sxcjson_data[--global.sxcjson_passive_size];
+    struct sxcjson* result = &global.sxcjson_data[global.sxcjson_data_size++];
     uint32_t start = *i;
     if (src[*i] == '{') {
         (*i)++;
@@ -75,7 +75,7 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
 }
 void sxcjson_init() {
     global.sxcjson_char_size = 0;
-    global.sxcjson_passive_size = sxcjson_capacity;
+    global.sxcjson_data_size = 0;
 }
 int main() {
     sxcjson_init();
