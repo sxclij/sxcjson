@@ -18,12 +18,13 @@ struct sxcjson* parse_obj(const char* src, uint32_t* i) {
         while (*i != '{' && *i != '}' && *i != ':' && *i != ',') {
             (*i)++;
         }
-        char* str = (char*)malloc(sizeof(char) * (*i - start) + 1);
+        uint32_t str_size = *i - start;
+        char* str = (char*)malloc(sizeof(char) * (str_size + 1));
         result->key = str;
         result->next = NULL;
         result->val = NULL;
-        memcpy(str, src + start, *i - start);
-        str[*i - start] = '\0';
+        memcpy(str, src + start, str_size);
+        str[str_size] = '\0';
         return result;
     }
 }
