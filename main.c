@@ -53,6 +53,9 @@ struct sxcjson* sxcjson_provide(struct sxcjson* src, const char* str) {
         }
         while (memcmp(result->str, str + start, i - start) != 0) {
             result = result->next;
+            if (result == NULL) {
+                return NULL;
+            }
         }
         result = result->val;
         if (str[i] == '.') {
@@ -65,6 +68,6 @@ int main() {
     const char* src = "{foo:{a:1,b:2,c:3},bar:def}";
     struct sxcjson* json = sxcjson_parse(src);
     struct sxcjson* foo_b = sxcjson_provide(json, "foo.b");
-    puts(foo_b->str);   // 2
+    puts(foo_b->str);  // 2
     return 0;
 }
