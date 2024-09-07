@@ -43,9 +43,9 @@ struct sxcjson* sxcjson_parse(const char* src) {
     uint32_t i = 0;
     return sxcjson_parse_obj(src, &i);
 }
-struct sxcjson* sxcjson_provide(struct sxcjson* src, const char* str) {
+struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
     uint32_t i = 0;
-    struct sxcjson* result = src;
+    struct sxcjson* result = json;
     while (str[i] != '\0') {
         uint32_t start = i;
         while (str[i] != '.' && str[i] != '\0') {
@@ -64,10 +64,21 @@ struct sxcjson* sxcjson_provide(struct sxcjson* src, const char* str) {
     }
     return result;
 }
+void sxcjson_free(struct sxcjson* json) {
+    if(json->val != NULL) {
+        sxcjson_free(json->val);
+    }
+    if(json->next != NULL) {
+        sxcjson_free(json->next);
+    }
+    free(json->str);
+    free(json);
+}
 int main() {
     const char* src = "{foo:{a:1,b:2,c:3},bar:def}";
     struct sxcjson* json = sxcjson_parse(src);
     struct sxcjson* foo_b = sxcjson_provide(json, "foo.b");
     puts(foo_b->str);  // 2
+    sxcjson_free(json);
     return 0;
 }
