@@ -11,17 +11,20 @@ struct sxcjson {
 
 struct sxcjson* parse_obj(const char* src, uint32_t* i) {
     struct sxcjson* result = (struct sxcjson*)malloc(sizeof(struct sxcjson));
-    uint32_t start = i;
+    uint32_t start = *i;
     if (src[*i] == '{') {
+        
         return result;
     }
     if (src[*i] == '}') {
         return result;
     }
     if (src[*i] == ',') {
+        (*i)++;
+        result->next = parse_obj(src,i);
         return result;
     }
-    while (*i != '{' && *i != '}' && *i != ':' && *i != ',') {
+    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',') {
         (*i)++;
     }
     uint32_t str_size = *i - start;
@@ -40,9 +43,11 @@ struct sxcjson* parse_obj(const char* src, uint32_t* i) {
 }
 struct sxcjson* parse(const char* src) {
     uint32_t i = 0;
-    parse_obj(src, &i);
+    return parse_obj(src, &i);
 }
 
 int main() {
-    struct sxcjson* json = parse("foo:abc");
+    const char* src = "foo:abc";
+    struct sxcjson* json = parse(src);
+    return 0;
 }
