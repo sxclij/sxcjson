@@ -3,6 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define sxcjson_capacity (1<<16)
+
+struct {
+    char sxcjson_char[sxcjson_capacity];
+    struct sxcjson sxcjson_data[sxcjson_capacity];
+    struct sxcjson* sxcjson_passive[sxcjson_capacity];
+    uint32_t sxcjson_char_size;
+    uint32_t sxcjson_passive_size;
+} global;
+
 struct sxcjson {
     char* str;
     struct sxcjson* val;
@@ -65,10 +75,10 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
     return result;
 }
 void sxcjson_free(struct sxcjson* json) {
-    if(json->val != NULL) {
+    if (json->val != NULL) {
         sxcjson_free(json->val);
     }
-    if(json->next != NULL) {
+    if (json->next != NULL) {
         sxcjson_free(json->next);
     }
     free(json->str);
