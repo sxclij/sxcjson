@@ -3,36 +3,51 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define sxcjson_capacity (1 << 16)
+
 struct sxcjson {
     char* str;
-    struct sxcjson* val;
+    struct sxcjson* child;
     struct sxcjson* next;
 };
+struct {
+    char sxcjson_char[sxcjson_capacity];
+    struct sxcjson sxcjson_data[sxcjson_capacity];
+    uint32_t sxcjson_char_size;
+    uint32_t sxcjson_data_size;
+} global;
 
 struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
-    struct sxcjson* result = (struct sxcjson*)malloc(sizeof(struct sxcjson));
-    uint32_t start = *i;
+    struct sxcjson* result = &global.sxcjson_data[global.sxcjson_data_size++];
     if (src[*i] == '{') {
         (*i)++;
         result = sxcjson_parse_obj(src, i);
         (*i)++;
         return result;
     }
-    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\0') {
+    if (src[*i] == '\"') {
+        (*i)++;
+    }
+    uint32_t start = *i;
+    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\"' && src[*i] != '\0') {
         (*i)++;
     }
     uint32_t str_size = *i - start;
-    char* str = (char*)malloc(sizeof(char) * (str_size + 1));
+    char* str = &global.sxcjson_char[global.sxcjson_char_size];
+    global.sxcjson_char_size += str_size + 1;
     result->str = str;
     result->next = NULL;
-    result->val = NULL;
+    result->child = NULL;
     memcpy(str, src + start, str_size);
     str[str_size] = '\0';
+    if (src[*i] == '\"') {
+        (*i)++;
+    }
     if (src[*i] != ':') {
         return result;
     }
     (*i)++;
-    result->val = sxcjson_parse_obj(src, i);
+    result->child = sxcjson_parse_obj(src, i);
     if (src[*i] == ',') {
         (*i)++;
         result->next = sxcjson_parse_obj(src, i);
@@ -57,28 +72,22 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
                 return NULL;
             }
         }
-        result = result->val;
+        result = result->child;
         if (str[i] == '.') {
             i++;
         }
     }
     return result;
 }
-void sxcjson_free(struct sxcjson* json) {
-    if(json->val != NULL) {
-        sxcjson_free(json->val);
-    }
-    if(json->next != NULL) {
-        sxcjson_free(json->next);
-    }
-    free(json->str);
-    free(json);
+void sxcjson_init() {
+    global.sxcjson_char_size = 0;
+    global.sxcjson_data_size = 0;
 }
 int main() {
-    const char* src = "{foo:{a:1,b:2,c:3},bar:{f:6,e:5,d:4}}";
+    sxcjson_init();
+    const char* src = "{\"foo\":{\"a\":1,\"b\":2,\"c\":3},\"bar\":{\"f\":6,\"e\":5,\"d\":4}}";
     struct sxcjson* json = sxcjson_parse(src);
     struct sxcjson* foo_e = sxcjson_provide(json, "bar.e");
     puts(foo_e->str);  // 5
-    sxcjson_free(json);
     return 0;
 }
