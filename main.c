@@ -19,14 +19,17 @@ struct {
 
 struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
     struct sxcjson* result = &global.sxcjson_data[global.sxcjson_data_size++];
-    uint32_t start = *i;
     if (src[*i] == '{') {
         (*i)++;
         result = sxcjson_parse_obj(src, i);
         (*i)++;
         return result;
     }
-    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\0') {
+    if (src[*i] == '\"') {
+        (*i)++;
+    }
+    uint32_t start = *i;
+    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\"' && src[*i] != '\0') {
         (*i)++;
     }
     uint32_t str_size = *i - start;
@@ -37,6 +40,9 @@ struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
     result->child = NULL;
     memcpy(str, src + start, str_size);
     str[str_size] = '\0';
+    if (src[*i] == '\"') {
+        (*i)++;
+    }
     if (src[*i] != ':') {
         return result;
     }
@@ -79,7 +85,7 @@ void sxcjson_init() {
 }
 int main() {
     sxcjson_init();
-    const char* src = "{foo:{a:1,b:2,c:3},bar:{f:6,e:5,d:4}}";
+    const char* src = "{\"foo\":{\"a\":1,\"b\":2,\"c\":3},\"bar\":{\"f\":6,\"e\":5,\"d\":4}}";
     struct sxcjson* json = sxcjson_parse(src);
     struct sxcjson* foo_e = sxcjson_provide(json, "bar.e");
     puts(foo_e->str);  // 5
