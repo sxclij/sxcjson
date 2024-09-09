@@ -87,7 +87,7 @@ int main() {
     sxcjson_init();
     const char* src = "{\"foo\":{\"a\":1,\"b\":2,\"c\":3},\"bar\":{\"f\":6,\"e\":5,\"d\":4}}";
     struct sxcjson* json = sxcjson_parse(src);
-    struct sxcjson* foo_e = sxcjson_provide(json, "bar.e");
-    puts(foo_e->str);  // 5
+    struct sxcjson* bar_e = sxcjson_provide(json, "bar.e");
+    puts(bar_e->str);  // 5
     return 0;
 }
