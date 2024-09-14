@@ -105,12 +105,12 @@ void sxcjson_init() {
 }
 int main() {
     sxcjson_init();
-    const char* src = "{alice:{size:156,inventory:{1:bag,2:phone}},bob{size:180,inventory:{}}}";
+    const char* src = "{alice:{size:156,inventory:{1:bag,2:phone}},bob:{size:180,inventory:{1:bag}}}";
     char buf[1024];
     struct sxcjson* json = sxcjson_parse(src);
     struct sxcjson* alice = sxcjson_provide(json, "alice");
     struct sxcjson* alice_size = sxcjson_provide(json, "alice.size");
-    sxcjson_to_str(buf, alice);
+    sxcjson_to_str(buf, json);
     puts(buf);
     puts(alice->str);
     return 0;
