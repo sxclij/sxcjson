@@ -79,6 +79,19 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
     }
     return result;
 }
+uint32_t sxcjson_to_str(struct sxcjson* src, char* dst) {
+    uint32_t n = 0;
+    dst[n++] = '{';
+    if (src->child) {
+        n += sxcjson_to_str(src->child, dst + n);
+    }
+    if (src->next) {
+        dst[n++] = ',';
+        n += sxcjson_to_str(src->next, dst + n);
+    }
+    dst[n++] = '}';
+    return n;
+}
 void sxcjson_init() {
     global.sxcjson_char_size = 0;
     global.sxcjson_data_size = 0;
