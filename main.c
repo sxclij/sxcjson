@@ -79,17 +79,24 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
     }
     return result;
 }
-uint32_t sxcjson_to_str(struct sxcjson* src, char* dst) {
+uint32_t sxcjson_to_str(char* dst, struct sxcjson* src) {
     uint32_t n = 0;
-    dst[n++] = '{';
+    uint32_t str_size = strlen(src->str);
+    if(src->next) {
+        dst[n++] = '{';
+    }
+    memcpy(dst+n, src->str, str_size);
+    n += str_size;
     if (src->child) {
-        n += sxcjson_to_str(src->child, dst + n);
+        dst[n++] = ':';
+        n += sxcjson_to_str(dst + n,src->child);
     }
     if (src->next) {
         dst[n++] = ',';
-        n += sxcjson_to_str(src->next, dst + n);
+        n += sxcjson_to_str(dst + n,src->next);
+        dst[n++] = '}';
     }
-    dst[n++] = '}';
+    dst[n] = '\0';
     return n;
 }
 void sxcjson_init() {
@@ -98,9 +105,13 @@ void sxcjson_init() {
 }
 int main() {
     sxcjson_init();
-    const char* src = "{\"foo\":{\"a\":1,\"b\":2,\"c\":3},\"bar\":{\"f\":6,\"e\":5,\"d\":4}}";
+    const char* src = "{alice:{size:156,inventory:{1:bag,2:phone}},bob{size:180,inventory:{}}}";
+    char buf[1024];
     struct sxcjson* json = sxcjson_parse(src);
-    struct sxcjson* bar_e = sxcjson_provide(json, "bar.e");
-    puts(bar_e->str);  // 5
+    struct sxcjson* alice = sxcjson_provide(json, "alice");
+    struct sxcjson* alice_size = sxcjson_provide(json, "alice.size");
+    sxcjson_to_str(buf, alice);
+    puts(buf);
+    puts(alice->str);
     return 0;
 }
