@@ -22,11 +22,16 @@ struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
     if (src[*i] == '{') {
         (*i)++;
         result = sxcjson_parse_obj(src, i);
+        struct sxcjson* itr = result;
+        while (src[*i] != '}') {
+            itr->next = sxcjson_parse_obj(src, i);
+            itr = itr->next;
+            while (src[*i] == ',') {
+                (*i)++;
+            }
+        }
         (*i)++;
         return result;
-    }
-    if (src[*i] == '\"') {
-        (*i)++;
     }
     uint32_t start = *i;
     while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\"' && src[*i] != '\0') {
@@ -40,17 +45,9 @@ struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
     result->child = NULL;
     memcpy(str, src + start, str_size);
     str[str_size] = '\0';
-    if (src[*i] == '\"') {
+    if (src[*i] == ':') {
         (*i)++;
-    }
-    if (src[*i] != ':') {
-        return result;
-    }
-    (*i)++;
-    result->child = sxcjson_parse_obj(src, i);
-    if (src[*i] == ',') {
-        (*i)++;
-        result->next = sxcjson_parse_obj(src, i);
+        result->child = sxcjson_parse_obj(src, i);
     }
     return result;
 }
@@ -82,18 +79,18 @@ struct sxcjson* sxcjson_provide(struct sxcjson* json, const char* str) {
 uint32_t sxcjson_to_str(char* dst, struct sxcjson* src) {
     uint32_t n = 0;
     uint32_t str_size = strlen(src->str);
-    if(src->next) {
+    if (src->next) {
         dst[n++] = '{';
     }
-    memcpy(dst+n, src->str, str_size);
+    memcpy(dst + n, src->str, str_size);
     n += str_size;
     if (src->child) {
         dst[n++] = ':';
-        n += sxcjson_to_str(dst + n,src->child);
+        n += sxcjson_to_str(dst + n, src->child);
     }
     if (src->next) {
         dst[n++] = ',';
-        n += sxcjson_to_str(dst + n,src->next);
+        n += sxcjson_to_str(dst + n, src->next);
         dst[n++] = '}';
     }
     dst[n] = '\0';
