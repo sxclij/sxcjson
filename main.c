@@ -17,18 +17,22 @@ struct {
     uint32_t sxcjson_data_size;
 } global;
 
+void sxcjson_parse_splitter(const char* src, uint32_t* i) {
+    while (src[*i] == ',' || src[*i] == '\n') {
+        (*i)++;
+    }
+}
 struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
     struct sxcjson* result = &global.sxcjson_data[global.sxcjson_data_size++];
     if (src[*i] == '{') {
         (*i)++;
         result = sxcjson_parse_obj(src, i);
+        sxcjson_parse_splitter(src, i);
         struct sxcjson* itr = result;
         while (src[*i] != '}') {
             itr->next = sxcjson_parse_obj(src, i);
             itr = itr->next;
-            while (src[*i] == ',') {
-                (*i)++;
-            }
+            sxcjson_parse_splitter(src, i);
         }
         (*i)++;
         return result;
@@ -102,7 +106,7 @@ void sxcjson_init() {
 }
 int main() {
     sxcjson_init();
-    const char* src = "{alice:{size:156,inventory:{1:bag,2:phone}},bob:{size:180,inventory:{1:bag}}}";
+    const char* src = "{alice:{size:156,inventory:{bag,phone}},bob:{size:180,inventory:{bag}}}";
     char buf[1024];
     struct sxcjson* json = sxcjson_parse(src);
     struct sxcjson* alice = sxcjson_provide(json, "alice");
