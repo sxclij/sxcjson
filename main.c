@@ -37,6 +37,19 @@ struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
         (*i)++;
         return result;
     }
+    if (src[*i] == '[') {
+        (*i)++;
+        result = sxcjson_parse_obj(src, i);
+        sxcjson_parse_splitter(src, i);
+        struct sxcjson* itr = result;
+        while (src[*i] != ']') {
+            itr->next = sxcjson_parse_obj(src, i);
+            itr = itr->next;
+            sxcjson_parse_splitter(src, i);
+        }
+        (*i)++;
+        return result;
+    }
     uint32_t start = *i;
     while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\"' && src[*i] != '\0') {
         (*i)++;
