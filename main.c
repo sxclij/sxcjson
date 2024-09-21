@@ -126,6 +126,6 @@ int main() {
     struct sxcjson* alice_size = sxcjson_provide(json, "alice.size");
     sxcjson_to_str(buf, json);
     puts(buf);
-    puts(alice->str);
+    puts(alice_size->str);
     return 0;
 }
