@@ -51,7 +51,7 @@ struct sxcjson* sxcjson_parse_obj(const char* src, uint32_t* i) {
         return result;
     }
     uint32_t start = *i;
-    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\"' && src[*i] != '\0') {
+    while (src[*i] != '{' && src[*i] != '}' && src[*i] != ':' && src[*i] != ',' && src[*i] != '\"' && src[*i] != '\n' && src[*i] != '\0') {
         (*i)++;
     }
     uint32_t str_size = *i - start;
