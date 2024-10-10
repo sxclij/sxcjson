@@ -10,6 +10,10 @@ struct sxcjson {
     struct sxcjson* child;
     struct sxcjson* next;
 };
+struct sxcjson_string {
+    char* data;
+    uint32_t size;
+};
 struct {
     char sxcjson_char[sxcjson_capacity];
     struct sxcjson sxcjson_data[sxcjson_capacity];
